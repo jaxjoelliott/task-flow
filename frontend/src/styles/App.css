@@ -141,6 +141,11 @@ textarea {
   border-radius: 0.75rem;
   padding: 0.75rem;
   box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05);
+  border-left: 4px solid transparent;
+}
+
+.task-card--overdue {
+  border-left-color: #e02424;
 }
 
 .task-header {
@@ -148,6 +153,21 @@ textarea {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.5rem;
+}
+
+.task-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.overdue-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background-color: #e02424;
+  color: white;
+  font-weight: 600;
 }
 
 .task-header h3 {
