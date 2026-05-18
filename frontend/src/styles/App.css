@@ -130,6 +130,18 @@ textarea {
   color: #e02424;
 }
 
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.sort-controls select {
+  width: auto;
+}
+
 .task-list {
   display: flex;
   flex-direction: column;

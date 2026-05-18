@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
+
+const PRIORITY_RANK = { High: 3, Medium: 2, Low: 1 };
 
 const isOverdue = (task) => {
   if (!task.dueDate || task.status === 'Done') return false;
@@ -10,6 +12,8 @@ const isOverdue = (task) => {
 };
 
 const TaskList = ({ tasks, onUpdateTask, onDeleteTask }) => {
+  const [sortOrder, setSortOrder] = useState('none');
+
   if (!tasks.length) {
     return <p>No tasks yet. Add your first task above.</p>;
   }
@@ -18,9 +22,28 @@ const TaskList = ({ tasks, onUpdateTask, onDeleteTask }) => {
     onUpdateTask(task._id, { ...task, status: newStatus });
   };
 
+  const sortedTasks = [...tasks].sort((a, b) => {
+    if (sortOrder === 'high-to-low') return PRIORITY_RANK[b.priority] - PRIORITY_RANK[a.priority];
+    if (sortOrder === 'low-to-high') return PRIORITY_RANK[a.priority] - PRIORITY_RANK[b.priority];
+    return 0;
+  });
+
   return (
+    <div>
+      <div className="sort-controls">
+        <label htmlFor="priority-sort">Sort by priority:</label>
+        <select
+          id="priority-sort"
+          value={sortOrder}
+          onChange={(e) => setSortOrder(e.target.value)}
+        >
+          <option value="none">Default</option>
+          <option value="high-to-low">High to Low</option>
+          <option value="low-to-high">Low to High</option>
+        </select>
+      </div>
     <div className="task-list">
-      {tasks.map((task) => (
+      {sortedTasks.map((task) => (
         <div className={`task-card${isOverdue(task) ? ' task-card--overdue' : ''}`} key={task._id}>
           <div className="task-header">
             <h3>{task.title}</h3>
@@ -58,6 +81,7 @@ const TaskList = ({ tasks, onUpdateTask, onDeleteTask }) => {
           </div>
         </div>
       ))}
+    </div>
     </div>
   );
 };
