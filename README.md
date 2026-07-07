@@ -2,17 +2,18 @@
 
 A full-stack productivity app for managing tasks on a drag-and-drop board, with priority levels, due-date tracking, light/dark themes, and visual progress tracking. Created for Senior Project at Palm Beach Atlantic University.
 
-![Task Flow Screenshot](tm3.PNG)
+![Task Flow Screenshot](tm.PNG)
 
 ## Live Demo
+
 (https://task-manager-app-mauve-tau.vercel.app/)
 
 ## Tech Stack
 
-**Frontend:** React, Recharts, Axios  
-**Backend:** Node.js, Express  
-**Database:** MongoDB Atlas  
-**Auth:** JWT, bcrypt  
+**Frontend:** React, Recharts, Axios
+**Backend:** Node.js, Express
+**Database:** MongoDB Atlas
+**Auth:** JWT, bcrypt
 
 ## Features
 
@@ -31,10 +32,12 @@ A full-stack productivity app for managing tasks on a drag-and-drop board, with 
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js
 - MongoDB Atlas account
 
 ### Backend Setup
+
 ```bash
 cd backend
 npm install
@@ -44,16 +47,18 @@ npm run dev
 ```
 
 ### Frontend Setup
+
 ```bash
 cd frontend
 npm install
 npm start
 ```
 
-Frontend runs on http://localhost:3000  
+Frontend runs on http://localhost:3000
 Backend runs on http://localhost:5000
 
 ## Project Structure
+
 ```
 task-manager-app/
 ├── backend/
@@ -71,14 +76,15 @@ task-manager-app/
 
 ## API Endpoints
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| POST | /api/auth/register | Register user | No |
-| POST | /api/auth/login | Login user | No |
-| GET | /api/tasks | Get all tasks | Yes |
-| POST | /api/tasks | Create task | Yes |
-| PUT | /api/tasks/:id | Update task | Yes |
-| DELETE | /api/tasks/:id | Delete task | Yes |
+| Method | Endpoint           | Description   | Auth |
+| ------ | ------------------ | ------------- | ---- |
+| POST   | /api/auth/register | Register user | No   |
+| POST   | /api/auth/login    | Login user    | No   |
+| GET    | /api/tasks         | Get all tasks | Yes  |
+| POST   | /api/tasks         | Create task   | Yes  |
+| PUT    | /api/tasks/:id     | Update task   | Yes  |
+| DELETE | /api/tasks/:id     | Delete task   | Yes  |
 
 ## Author
+
 Jackson Elliott — CS Senior, Palm Beach Atlantic University
