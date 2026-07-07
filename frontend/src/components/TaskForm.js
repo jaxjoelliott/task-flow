@@ -1,85 +1,106 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useImperativeHandle, forwardRef } from 'react';
+import { PRIORITIES } from '../utils/tasks';
 
-const TaskForm = ({ onAddTask }) => {
+const PRIORITY_LABEL = { Low: 'Low', Medium: 'Medium', High: 'High' };
+
+// Persistent single-line quick-capture bar. Enter submits with sensible
+// defaults; the chevron expands description / due date / priority inline.
+// Status is intentionally omitted — the board owns status; new tasks are 'To Do'.
+const TaskForm = forwardRef(({ onAddTask }, ref) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [priority, setPriority] = useState('Medium');
-  const [status, setStatus] = useState('To Do');
+  const [expanded, setExpanded] = useState(false);
+  const titleRef = useRef(null);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onAddTask({ title, description, dueDate, priority, status });
+  // Let the parent focus the input (keyboard shortcut / after-mount).
+  useImperativeHandle(ref, () => ({
+    focus: () => titleRef.current?.focus(),
+  }));
+
+  const reset = () => {
     setTitle('');
     setDescription('');
     setDueDate('');
     setPriority('Medium');
-    setStatus('To Do');
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!title.trim()) return;
+    onAddTask({ title: title.trim(), description, dueDate, priority, status: 'To Do' });
+    reset();
+    titleRef.current?.focus();
   };
 
   return (
-    <div className="card">
-      <h2>Create New Task</h2>
-      <form onSubmit={handleSubmit} className="form">
-        <div className="form-group">
-          <label htmlFor="title">Title</label>
-          <input
-            id="title"
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="description">Description</label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-        <div className="form-row">
+    <form className="quick-capture" onSubmit={handleSubmit}>
+      <div className="capture-row">
+        <input
+          ref={titleRef}
+          className="capture-input"
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Add a task, press Enter  ( / to focus )"
+          aria-label="Task title"
+        />
+        <button
+          type="button"
+          className="icon-button"
+          aria-label={expanded ? 'Hide details' : 'Show details'}
+          aria-expanded={expanded}
+          onClick={() => setExpanded((v) => !v)}
+        >
+          {expanded ? '⌃' : '⌄'}
+        </button>
+        <button type="submit" className="primary-button">
+          Add
+        </button>
+      </div>
+
+      {expanded && (
+        <div className="capture-expand">
+          <div className="form-group full">
+            <label htmlFor="qc-description">Description</label>
+            <textarea
+              id="qc-description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Optional details…"
+            />
+          </div>
           <div className="form-group">
-            <label htmlFor="dueDate">Due Date</label>
+            <label htmlFor="qc-dueDate">Due date</label>
             <input
-              id="dueDate"
+              id="qc-dueDate"
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
             />
           </div>
           <div className="form-group">
-            <label htmlFor="priority">Priority</label>
-            <select
-              id="priority"
-              value={priority}
-              onChange={(e) => setPriority(e.target.value)}
-            >
-              <option value="Low">Low</option>
-              <option value="Medium">Medium</option>
-              <option value="High">High</option>
-            </select>
-          </div>
-          <div className="form-group">
-            <label htmlFor="status">Status</label>
-            <select
-              id="status"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-            >
-              <option value="To Do">To Do</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Done">Done</option>
-            </select>
+            <span className="section-label">Priority</span>
+            <div className="chip-group" role="group" aria-label="Priority">
+              {PRIORITIES.map((p) => (
+                <button
+                  type="button"
+                  key={p}
+                  className={`chip${priority === p ? ' is-active' : ''}`}
+                  aria-pressed={priority === p}
+                  onClick={() => setPriority(p)}
+                >
+                  <span className={`chip-dot priority-${p}`} />
+                  {PRIORITY_LABEL[p]}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
-        <button type="submit" className="primary-button">
-          Add Task
-        </button>
-      </form>
-    </div>
+      )}
+    </form>
   );
-};
+});
 
 export default TaskForm;

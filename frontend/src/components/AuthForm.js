@@ -25,7 +25,14 @@ const AuthForm = ({ apiBaseUrl, onAuthSuccess }) => {
 
   return (
     <div className="card auth-card">
-      <h2>{isLogin ? 'Login' : 'Register'}</h2>
+      <div className="wordmark" style={{ marginBottom: 'var(--space-4)' }}>
+        <span className="wordmark-dot" />
+        Task Flow
+      </div>
+      <h2>{isLogin ? 'Welcome back' : 'Create your account'}</h2>
+      <p className="auth-sub">
+        {isLogin ? 'Log in to pick up where you left off.' : 'Start organizing your work in minutes.'}
+      </p>
       <form onSubmit={handleSubmit} className="form">
         {!isLogin && (
           <div className="form-group">
@@ -59,18 +66,17 @@ const AuthForm = ({ apiBaseUrl, onAuthSuccess }) => {
             required
           />
         </div>
-        {error && <p className="error-text">{error}</p>}
-        <button type="submit" className="primary-button">
-          {isLogin ? 'Login' : 'Create Account'}
+        {error && <p className="inline-alert">{error}</p>}
+        <button type="submit" className="primary-button" style={{ width: '100%' }}>
+          {isLogin ? 'Log in' : 'Create account'}
         </button>
       </form>
-      <button
-        type="button"
-        className="link-button"
-        onClick={() => setIsLogin((prev) => !prev)}
-      >
-        {isLogin ? "Don't have an account? Register" : 'Already have an account? Login'}
-      </button>
+      <p className="auth-switch">
+        {isLogin ? "Don't have an account? " : 'Already have an account? '}
+        <button type="button" className="link-button" onClick={() => setIsLogin((prev) => !prev)}>
+          {isLogin ? 'Register' : 'Log in'}
+        </button>
+      </p>
     </div>
   );
 };
