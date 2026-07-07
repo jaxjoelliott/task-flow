@@ -1,8 +1,8 @@
 # Task Flow Management App
 
-A full-stack productivity app for managing tasks with a Kanban-style workflow, priority levels, and visual progress tracking. Created for Senior Project at Palm Beach Atlantic University.
+A full-stack productivity app for managing tasks on a drag-and-drop board, with priority levels, due-date tracking, light/dark themes, and visual progress tracking. Created for Senior Project at Palm Beach Atlantic University.
 
-![Task Manager Screenshot](tm3.PNG)
+![Task Flow Screenshot](tm3.PNG)
 
 ## Live Demo
 (https://task-manager-app-mauve-tau.vercel.app/)
@@ -17,12 +17,16 @@ A full-stack productivity app for managing tasks with a Kanban-style workflow, p
 ## Features
 
 - User registration and login with JWT authentication
-- Create, update, and delete tasks
-- Set priority levels (Low, Medium, High)
-- Track task status (To Do, In Progress, Done)
-- Kanban-style status updates
-- Pie chart visualization of task progress
-- Responsive layout
+- Drag-and-drop status board (To Do / In Progress / Done) — drag a card to change its status
+- Quick-capture bar to add a task with a single keystroke (press Enter, or `/` to focus it)
+- Inline editing of a task's title, description, priority, and due date — click to edit
+- Priority levels (Low, Medium, High) with subtle color coding
+- Human-friendly due dates ("Due tomorrow", "Overdue by 2 days") with overdue and due-soon highlighting
+- Search, filter by priority or overdue, and group by status, priority, or due date
+- Light and dark mode — persists across visits and follows your system preference
+- Optimistic updates with an undo option on delete
+- Compact progress donut and completion metrics
+- Responsive layout that collapses the board on small screens
 
 ## Getting Started
 
@@ -60,8 +64,9 @@ task-manager-app/
 │   └── routes/        # API endpoints
 └── frontend/
     └── src/
-        ├── components/ # React components
-        └── styles/     # CSS
+        ├── components/ # TaskForm, TaskList, TaskCard, ProgressChart, AuthForm, ToastHost
+        ├── utils/      # shared task helpers (due dates, grouping, sorting, theme colors)
+        └── styles/     # CSS design-token system (light/dark themes)
 ```
 
 ## API Endpoints
