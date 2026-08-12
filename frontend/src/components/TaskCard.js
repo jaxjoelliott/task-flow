@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { STATUSES, PRIORITIES, getDueMeta, isOverdue } from '../utils/tasks';
+import { STATUSES, PRIORITIES, getDueMeta, isOverdue, normalizeTags } from '../utils/tasks';
+import TagInput from './TagInput';
 
 // A dueDate (ISO or 'YYYY-MM-DD', stored at UTC midnight) -> the 'YYYY-MM-DD'
 // value a native <input type="date"> expects, read in UTC to keep the calendar day.
@@ -10,6 +11,11 @@ const toDateInputValue = (dueDate) => {
   const m = String(d.getUTCMonth() + 1).padStart(2, '0');
   const day = String(d.getUTCDate()).padStart(2, '0');
   return `${d.getUTCFullYear()}-${m}-${day}`;
+};
+
+const tagsEqual = (a = [], b = []) => {
+  if (a.length !== b.length) return false;
+  return a.every((tag, i) => tag === b[i]);
 };
 
 // A single draggable task card with click-to-edit title/description and a
@@ -23,12 +29,17 @@ const TaskCard = ({
   isDragging,
   draggable = true,
 }) => {
-  const [editingField, setEditingField] = useState(null); // 'title' | 'description' | null
+  const [editingField, setEditingField] = useState(null); // 'title' | 'description' | 'tags' | null
   const [draft, setDraft] = useState('');
+  const [tagDraft, setTagDraft] = useState([]);
 
   const startEdit = (field) => {
     setEditingField(field);
-    setDraft(task[field] || '');
+    if (field === 'tags') {
+      setTagDraft([...(task.tags || [])]);
+    } else {
+      setDraft(task[field] || '');
+    }
   };
 
   const commit = () => {
@@ -47,6 +58,19 @@ const TaskCard = ({
   };
 
   const cancel = () => setEditingField(null);
+
+  const commitTags = (nextTags) => {
+    const normalized = normalizeTags(nextTags);
+    setTagDraft(normalized);
+    if (!tagsEqual(normalized, task.tags || [])) {
+      onUpdateTask(task._id, { ...task, tags: normalized });
+    }
+  };
+
+  const finishTagEdit = () => {
+    commitTags(tagDraft);
+    setEditingField(null);
+  };
 
   // Keyboard entry point for click-to-edit (Enter/Space) so it isn't mouse-only.
   const editKeyDown = (field) => (e) => {
@@ -82,6 +106,7 @@ const TaskCard = ({
 
   const due = getDueMeta(task);
   const overdue = isOverdue(task);
+  const tags = task.tags || [];
 
   const canDrag = draggable && editingField === null;
   const classNames = [
@@ -212,6 +237,33 @@ const TaskCard = ({
           >
             {task.priority}
           </button>
+        )}
+      </div>
+
+      <div className="task-tags">
+        {editingField === 'tags' ? (
+          <div className="task-tags-edit">
+            <TagInput tags={tagDraft} onChange={setTagDraft} placeholder="Add tag…" />
+            <button type="button" className="ghost-button tag-done-button" onClick={finishTagEdit}>
+              Done
+            </button>
+          </div>
+        ) : (
+          <>
+            {tags.map((tag) => (
+              <span className="tag-pill tag-pill--static" key={tag.toLowerCase()}>
+                {tag}
+              </span>
+            ))}
+            <button
+              type="button"
+              className="meta-edit meta-add tag-add"
+              onClick={() => startEdit('tags')}
+              title={tags.length ? 'Edit tags' : 'Add tags'}
+            >
+              {tags.length ? 'Edit tags' : '+ Tags'}
+            </button>
+          </>
         )}
       </div>
 

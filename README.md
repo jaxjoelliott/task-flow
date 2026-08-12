@@ -1,6 +1,6 @@
 # Task Flow Management App
 
-A full-stack productivity app for managing tasks on a drag-and-drop board, with priority levels, due-date tracking, light/dark themes, and visual progress tracking. Created for Senior Project at Palm Beach Atlantic University.
+A full-stack productivity app for managing tasks on a drag-and-drop board, with priority levels, tags, due-date tracking, light/dark themes, and visual progress tracking. Created for Senior Project at Palm Beach Atlantic University.
 
 ![Task Flow Screenshot](tm.PNG)
 
@@ -20,10 +20,11 @@ A full-stack productivity app for managing tasks on a drag-and-drop board, with 
 - User registration and login with JWT authentication
 - Drag-and-drop status board (To Do / In Progress / Done) — drag a card to change its status
 - Quick-capture bar to add a task with a single keystroke (press Enter, or `/` to focus it)
-- Inline editing of a task's title, description, priority, and due date — click to edit
+- Inline editing of a task's title, description, priority, due date, and tags — click to edit
 - Priority levels (Low, Medium, High) with subtle color coding
+- Free-form tags (up to 8 per task) with chip editing, filter chips, and group-by-tag view
 - Human-friendly due dates ("Due tomorrow", "Overdue by 2 days") with overdue and due-soon highlighting
-- Search, filter by priority or overdue, and group by status, priority, or due date
+- Search (title, description, tags), filter by priority/tag/overdue, and group by status, priority, due date, or tag
 - Light and dark mode — persists across visits and follows your system preference
 - Optimistic updates with an undo option on delete
 - Compact progress donut and completion metrics
@@ -69,8 +70,8 @@ task-manager-app/
 │   └── routes/        # API endpoints
 └── frontend/
     └── src/
-        ├── components/ # TaskForm, TaskList, TaskCard, ProgressChart, AuthForm, ToastHost
-        ├── utils/      # shared task helpers (due dates, grouping, sorting, theme colors)
+        ├── components/ # TaskForm, TaskList, TaskCard, TagInput, ProgressChart, AuthForm, ToastHost
+        ├── utils/      # shared task helpers (due dates, tags, grouping, sorting, theme colors)
         └── styles/     # CSS design-token system (light/dark themes)
 ```
 

@@ -7,6 +7,8 @@ import {
   DUE_BUCKETS,
   isOverdue,
   dueBucket,
+  collectTags,
+  taskHasTag,
 } from '../utils/tasks';
 
 const STATUS_VAR = {
@@ -41,12 +43,15 @@ const SkeletonBoard = () => (
 const TaskList = ({ tasks, loading, onUpdateTask, onDeleteTask }) => {
   const [search, setSearch] = useState('');
   const [priorityFilters, setPriorityFilters] = useState(() => new Set());
+  const [tagFilters, setTagFilters] = useState(() => new Set());
   const [overdueOnly, setOverdueOnly] = useState(false);
   const [groupBy, setGroupBy] = useState('status');
   const [sort, setSort] = useState('none');
 
   const [dragTaskId, setDragTaskId] = useState(null);
   const [dropColumn, setDropColumn] = useState(null);
+
+  const availableTags = collectTags(tasks);
 
   const togglePriority = (p) => {
     setPriorityFilters((prev) => {
@@ -57,12 +62,36 @@ const TaskList = ({ tasks, loading, onUpdateTask, onDeleteTask }) => {
     });
   };
 
+  const toggleTag = (tag) => {
+    const key = tag.toLowerCase();
+    setTagFilters((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
+
   if (loading) return <SkeletonBoard />;
 
   const query = search.trim().toLowerCase();
   const filtered = tasks.filter((t) => {
-    if (query && !`${t.title} ${t.description || ''}`.toLowerCase().includes(query)) return false;
+    if (query) {
+      const haystack = `${t.title} ${t.description || ''} ${(t.tags || []).join(' ')}`.toLowerCase();
+      if (!haystack.includes(query)) return false;
+    }
     if (priorityFilters.size && !priorityFilters.has(t.priority)) return false;
+    if (tagFilters.size) {
+      const taskKeys = new Set((t.tags || []).map((tag) => tag.toLowerCase()));
+      let hit = false;
+      for (const key of tagFilters) {
+        if (taskKeys.has(key)) {
+          hit = true;
+          break;
+        }
+      }
+      if (!hit) return false;
+    }
     if (overdueOnly && !isOverdue(t)) return false;
     return true;
   });
@@ -134,6 +163,7 @@ const TaskList = ({ tasks, loading, onUpdateTask, onDeleteTask }) => {
             ['status', 'Board'],
             ['priority', 'Priority'],
             ['due', 'Due'],
+            ['tag', 'Tag'],
           ].map(([value, label]) => (
             <button
               key={value}
@@ -171,10 +201,28 @@ const TaskList = ({ tasks, loading, onUpdateTask, onDeleteTask }) => {
           Overdue only
         </button>
       </div>
+      {availableTags.length > 0 && (
+        <div className="filter-chips filter-chips--tags" role="group" aria-label="Filter by tag">
+          {availableTags.map((tag) => {
+            const active = tagFilters.has(tag.toLowerCase());
+            return (
+              <button
+                key={tag.toLowerCase()}
+                className={`chip chip--tag${active ? ' is-active' : ''}`}
+                aria-pressed={active}
+                onClick={() => toggleTag(tag)}
+              >
+                {tag}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </>
   );
 
-  const noResults = filtered.length === 0 && (query || priorityFilters.size || overdueOnly);
+  const noResults =
+    filtered.length === 0 && (query || priorityFilters.size || tagFilters.size || overdueOnly);
   const noTasks = tasks.length === 0;
 
   let body;
@@ -227,6 +275,49 @@ const TaskList = ({ tasks, loading, onUpdateTask, onDeleteTask }) => {
                 )}
               </div>
             </div>
+          );
+        })}
+      </div>
+    );
+  } else if (groupBy === 'tag') {
+    // Multi-tag tasks appear under each matching tag; untagged tasks get their own section.
+    const buckets = [...availableTags, 'Untagged'];
+    const grouped = buckets.reduce((acc, b) => ({ ...acc, [b]: [] }), {});
+
+    for (const t of filtered) {
+      const taskTags = t.tags || [];
+      if (!taskTags.length) {
+        grouped.Untagged.push(t);
+        continue;
+      }
+      for (const tag of availableTags) {
+        if (taskHasTag(t, tag)) grouped[tag].push(t);
+      }
+    }
+
+    body = (
+      <div>
+        {buckets.map((bucket) => {
+          const items = grouped[bucket].slice().sort(sortFn);
+          if (items.length === 0) return null;
+          return (
+            <section className="group-section" key={bucket}>
+              <div className="group-section-header">
+                <span className="section-label">{bucket}</span>
+                <span className="column-count num">{items.length}</span>
+              </div>
+              <div className="group-list">
+                {items.map((task) => (
+                  <TaskCard
+                    key={`${bucket}-${task._id}`}
+                    task={task}
+                    isDragging={false}
+                    draggable={false}
+                    {...cardProps}
+                  />
+                ))}
+              </div>
+            </section>
           );
         })}
       </div>

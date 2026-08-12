@@ -81,3 +81,55 @@ export const STATUS_CHART_COLORS = {
   light: { 'To Do': '#8A8A80', 'In Progress': '#3B67D6', Done: '#5E8C6A' },
   dark: { 'To Do': '#9A9A90', 'In Progress': '#7DA2F2', Done: '#87B394' },
 };
+
+export const MAX_TAG_LENGTH = 24;
+export const MAX_TAGS = 8;
+
+// Normalize free-form tags: trim, drop empties/duplicates (case-insensitive),
+// preserve first-seen casing, and enforce length/count limits.
+export const normalizeTags = (tags) => {
+  let list = tags;
+  if (typeof list === 'string') list = list.split(/[,#]/);
+  if (!Array.isArray(list)) return [];
+
+  const seen = new Set();
+  const out = [];
+
+  for (const raw of list) {
+    if (typeof raw !== 'string') continue;
+    const tag = raw
+      .trim()
+      .replace(/^#+/, '')
+      .replace(/\s+/g, ' ')
+      .slice(0, MAX_TAG_LENGTH)
+      .trim();
+    if (!tag) continue;
+
+    const key = tag.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(tag);
+    if (out.length >= MAX_TAGS) break;
+  }
+
+  return out;
+};
+
+export const taskHasTag = (task, tag) => {
+  const key = String(tag || '').toLowerCase();
+  return (task.tags || []).some((t) => t.toLowerCase() === key);
+};
+
+// Unique tags across a task list, sorted alphabetically (case-insensitive).
+export const collectTags = (tasks) => {
+  const seen = new Map();
+  for (const task of tasks) {
+    for (const tag of task.tags || []) {
+      const key = tag.toLowerCase();
+      if (!seen.has(key)) seen.set(key, tag);
+    }
+  }
+  return Array.from(seen.values()).sort((a, b) =>
+    a.localeCompare(b, undefined, { sensitivity: 'base' }),
+  );
+};

@@ -1,4 +1,7 @@
 const Task = require('../models/Task');
+const { normalizeTags } = require('../utils/tags');
+
+const ALLOWED_UPDATE_FIELDS = ['title', 'description', 'dueDate', 'priority', 'status', 'tags'];
 
 // @desc    Get tasks for logged-in user
 // @route   GET /api/tasks
@@ -17,7 +20,7 @@ const getTasks = async (req, res) => {
 // @route   POST /api/tasks
 // @access  Private
 const createTask = async (req, res) => {
-  const { title, description, dueDate, priority, status } = req.body;
+  const { title, description, dueDate, priority, status, tags } = req.body;
 
   if (!title) {
     return res.status(400).json({ message: 'Title is required' });
@@ -31,6 +34,7 @@ const createTask = async (req, res) => {
       dueDate,
       priority,
       status,
+      tags: normalizeTags(tags),
     });
 
     return res.status(201).json(task);
@@ -57,7 +61,17 @@ const updateTask = async (req, res) => {
       return res.status(401).json({ message: 'Not authorized' });
     }
 
-    task = await Task.findByIdAndUpdate(id, req.body, { new: true });
+    const updates = {};
+    for (const field of ALLOWED_UPDATE_FIELDS) {
+      if (Object.prototype.hasOwnProperty.call(req.body, field)) {
+        updates[field] = field === 'tags' ? normalizeTags(req.body.tags) : req.body[field];
+      }
+    }
+
+    task = await Task.findByIdAndUpdate(id, updates, {
+      new: true,
+      runValidators: true,
+    });
 
     return res.json(task);
   } catch (error) {

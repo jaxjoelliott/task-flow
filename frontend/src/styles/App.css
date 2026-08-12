@@ -542,6 +542,14 @@ textarea {
   margin-bottom: var(--space-4);
 }
 
+.filter-chips--tags {
+  margin-top: calc(var(--space-2) * -1);
+}
+
+.chip--tag {
+  font-family: inherit;
+}
+
 /* ── Board ─────────────────────────────────────────────────────────────── */
 .board {
   display: grid;
@@ -720,6 +728,96 @@ textarea {
   gap: var(--space-2);
   flex-wrap: wrap;
   margin-top: var(--space-2);
+  font-size: var(--fs-micro);
+  color: var(--text-faint);
+}
+
+.task-tags {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+  margin-top: var(--space-2);
+}
+
+.task-tags-edit {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.tag-done-button {
+  flex-shrink: 0;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--fs-micro);
+}
+
+.tag-input {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  width: 100%;
+  min-height: 36px;
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+}
+
+.tag-input.is-disabled {
+  opacity: 0.6;
+}
+
+.tag-input-field {
+  flex: 1;
+  min-width: 96px;
+  border: none;
+  background: transparent;
+  padding: var(--space-1) 0;
+  font-size: var(--fs-micro);
+  color: var(--text);
+}
+
+.tag-input-field:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-pill);
+  background-color: var(--primary-subtle);
+  color: var(--primary);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-medium);
+  line-height: 1.4;
+}
+
+.tag-pill--static {
+  pointer-events: none;
+}
+
+.tag-pill-remove {
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  padding: 0 2px;
+  font-size: 14px;
+  line-height: 1;
+  opacity: 0.75;
+}
+
+.tag-pill-remove:hover {
+  opacity: 1;
+}
+
+.tag-add {
   font-size: var(--fs-micro);
   color: var(--text-faint);
 }
