@@ -57,8 +57,7 @@ export default function Merch() {
         <p className="section-label">Rep the brand</p>
         <h2>Merch</h2>
         <p className="merch-intro">
-          A hat and a shirt to start. Real product photos and checkout will go here
-          once they’re ready — for now, Buy Now sends you to the contact form.
+          Hats and shirts with the JAXJO mark. Real photos and checkout coming soon.
         </p>
         <ul className="merch-grid">
           {site.merch.map((item) => {
