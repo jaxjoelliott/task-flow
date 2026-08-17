@@ -6,6 +6,7 @@ import ProgressChart from './components/ProgressChart';
 import AuthForm from './components/AuthForm';
 import ToastHost from './components/ToastHost';
 import { STATUSES, STATUS_CHART_COLORS } from './utils/tasks';
+import { pageview } from './utils/analytics';
 import './styles/App.css';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
@@ -73,6 +74,10 @@ function App() {
 
   useEffect(() => {
     if (token) fetchTasks();
+  }, [token]);
+
+  useEffect(() => {
+    pageview(token ? '/app' : '/login');
   }, [token]);
 
   // ── Keyboard shortcut: focus quick-capture ─────────────────────────────
